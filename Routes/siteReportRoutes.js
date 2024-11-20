@@ -1,5 +1,4 @@
 const express = require("express");
-const authController = require("./../controllers/authController");
 const siteController = require("./../Controllers/siteReportController");
 
 const router = express.Router();
@@ -9,12 +8,14 @@ router
   .post(siteController.createSiteReport)
   .get(siteController.getsitereports);
 
+router.get("/report", siteController.generatePDF);
 router.get("/search", siteController.searchreport);
-
+router.get("/trends", siteController.getInspectionTrends); // Moved this route above `/:id`
+router.get("/employeeperformance", siteController.getInspectionByEmployee);
 router
   .route("/:id")
   .patch(siteController.updatereport)
   .get(siteController.getsitesinglereport)
   .delete(siteController.deletereport);
-// router.get("/:id/pdf", siteController.createPDFReport);
+
 module.exports = router;

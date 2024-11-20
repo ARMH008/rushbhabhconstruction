@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Site Visit Report</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
+      .page-container {
+        width: 210mm;
+        margin: 0 auto;
+        background: white;
+      }
+
+      /* Header Section */
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding: 10px 0;
+        border-bottom: 1px solid #000;
+      }
+
+      .header-text {
+        text-align: left;
+      }
+
+      .header-text h1 {
+        font-size: 20px;
+        margin: 0;
+      }
+
+      .header-text p {
+        margin: 5px 0;
+      }
+
+      .logo {
+        width: 80px;
+        height: 80px;
+      }
+
+      /* Site Visit Report Section */
+      .site-visit-section {
+        margin-bottom: 30px;
+      }
+
+      .site-visit-section h2 {
+        text-align: center;
+        text-decoration: underline;
+        margin: 20px 0;
+      }
+
+      .details {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        margin-bottom: 20px;
+      }
+
+      .details div {
+        display: flex;
+        gap: 10px;
+      }
+
+      .details label {
+        font-weight: bold;
+        min-width: 70px;
+      }
+
+      .location-details {
+        margin-bottom: 20px;
+      }
+
+      .inspection-notes {
+        margin-bottom: 20px;
+      }
+
+      .compliance textarea {
+        width: 100%;
+        height: 150px;
+        margin: 10px 0;
+        padding: 10px;
+        border: 1px solid #000;
+      }
+
+      /* Checklist Section */
+      .checklist-section {
+        margin: 30px 0;
+      }
+
+      .checklist-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+      }
+
+      .compliance-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+      }
+
+      .compliance-table th,
+      .compliance-table td {
+        border: 1px solid #000;
+        padding: 8px;
+        text-align: left;
+      }
+
+      .compliance-table th {
+        background-color: #f2f2f2;
+      }
+
+      .checkbox-cell {
+        width: 30px;
+        text-align: center;
+      }
+
+      .checkbox-cell input[type="checkbox"] {
+        transform: scale(1.1);
+      }
+
+      .nested-list {
+        margin: 5px 0;
+        padding-left: 20px;
+        list-style-type: none;
+      }
+
+      .nested-list li {
+        display: flex;
+        align-items: center;
+        margin: 3px 0;
+      }
+
+      .nested-list input[type="checkbox"] {
+        margin-right: 8px;
+      }
+
+      /* Permission Section */
+      .permission-section {
+        margin: 30px 0;
+      }
+
+      .permission-section h2 {
+        font-size: 18px;
+        text-decoration: underline;
+        margin-bottom: 15px;
+      }
+
+      .signature-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+      }
+
+      .signature-table th,
+      .signature-table td {
+        border: 1px solid #000;
+        padding: 10px;
+        text-align: left;
+      }
+
+      /* Footer */
+      .footer {
+        margin-top: 30px;
+        text-align: center;
+        font-size: 12px;
+        border-top: 1px solid #000;
+        padding-top: 15px;
+      }
+
+      .footer p {
+        margin: 5px 0;
+      }
+
+      @media print {
+        body {
+          margin: 0;
+          padding: 0;
+        }
+
+        .page-container {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page-container">
+      <!-- Header -->
+      <div class="header">
+        <div class="header-text">
+          <img src="IMG-20241119-WA0002.jpg" alt="Logo" class="logo" />
+          <h1>Jayesh Makwana</h1>
+          <p>
+            (I.M.E.Structure, A.M.I.E.)<br />Consulting Structural Engineers &
+            Project Management Consultants
+          </p>
+        </div>
+      </div>
+
+      <!-- Site Visit Report Section -->
+      <div class="site-visit-section">
+        <h2>Site Visit Report</h2>
+        <div class="details">
+          <div>
+            <label>Project:</label>
+            <span>__________________</span>
+          </div>
+          <div>
+            <label>Job No:</label>
+            <span>__________________</span>
+          </div>
+          <div>
+            <label>Date:</label>
+            <span>__________________</span>
+          </div>
+        </div>
+        <div class="location-details">
+          <label>Location:</label>
+          <span>____________________________</span>
+        </div>
+        <div class="inspection-notes">
+          <p><strong>During our inspection the following is noted:</strong></p>
+        </div>
+        <div class="compliance">
+          <p>
+            <strong
+              >Specific Non-Compliances: The following points must be
+              attended/rectified before concreting</strong
+            >
+          </p>
+          <textarea></textarea>
+        </div>
+      </div>
+
+      <!-- Checklist Section -->
+      <div class="checklist-section">
+        <h2>General Compliance Checklist</h2>
+        <p>
+          The following points must be ensured to be complied with before
+          concreting:
+        </p>
+        <div class="checklist-container">
+          <!-- Left Table -->
+          <table class="compliance-table">
+            <thead>
+              <tr>
+                <th>√</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="checkbox-cell"><input type="checkbox" /></td>
+                <td>
+                  All props are tight, straight, vertical and adequately braced.
+                </td>
+              </tr>
+              <tr>
+                <td class="checkbox-cell"><input type="checkbox" /></td>
+                <td>
+                  Twisted, defective, spliced, damaged, decayed props, planks,
+                  plates, plywood, etc., are removed/replaced.
+                </td>
+              </tr>
+              <tr>
+                <td class="checkbox-cell"><input type="checkbox" /></td>
+                <td>Formwork is cleaned thoroughly.</td>
+              </tr>
+              <tr>
+                <td class="checkbox-cell"><input type="checkbox" /></td>
+                <td>Formwork is watertight.</td>
+              </tr>
+              <tr>
+                <td class="checkbox-cell"><input type="checkbox" /></td>
+                <td>
+                  Formwork of columns, beams is in line & plumb and
+                  appropriately secured in position against loads & thrust.
+                </td>
+              </tr>
+              <tr>
+                <td class="checkbox-cell"><input type="checkbox" /></td>
+                <td>
+                  Formwork of slabs, chhajja, etc., is in level and ensured
+                  strong enough to take the loads & thrusts.
+                </td>
+              </tr>
+              <tr>
+                <td class="checkbox-cell"><input type="checkbox" /></td>
+                <td>
+                  The slabs thicker than 150 mm, the immediate lower slab is
+                  also kept under propped condition.
+                </td>
+              </tr>
+              <tr>
+                <td class="checkbox-cell"><input type="checkbox" /></td>
+                <td>
+                  Adequate & appropriate cover at the following locations
+                  provided:
+                  <ul>
+                    <li><input type="checkbox" /> Column reinforcement</li>
+                    <li><input type="checkbox" /> Beam bottoms</li>
+                    <li><input type="checkbox" /> Beam sides</li>
+                    <li><input type="checkbox" /> Slab bottom</li>
+                    <li><input type="checkbox" /> Chajja, slab sides</li>
+                  </ul>
+                </td>
+              </tr>
+              <tr>
+                <td class="checkbox-cell"><input type="checkbox" /></td>
+                <td>Adequate & appropriate chairs are provided.</td>
+              </tr>
+              <tr>
+                <td class="checkbox-cell"><input type="checkbox" /></td>
+                <td>
+                  Adequate & appropriate spacer bars are provided between two
+                  layers of reinforcement in beams, etc.
+                </td>
+              </tr>
+              <tr>
+                <td class="checkbox-cell"><input type="checkbox" /></td>
+                <td>
+                  Column rings/ties are provided at beam junction for full depth
+                  of beam.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Right Table -->
+          <table class="compliance-table">
+            <thead>
+              <tr>
+                <th>√</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="checkbox-cell"><input type="checkbox" /></td>
+                <td>
+                  Appropriate dowel bars are provided at the following
+                  locations:
+                  <ul>
+                    <li>
+                      <input type="checkbox" /> Elevation purdies & up stands
+                    </li>
+                    <li>
+                      <input type="checkbox" /> Hanger columns, stub columns
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+              <tr>
+                <td class="checkbox-cell"><input type="checkbox" /></td>
+                <td>Future beams/slabs/staircase fillings.</td>
+              </tr>
+              <tr>
+                <td class="checkbox-cell"><input type="checkbox" /></td>
+                <td>
+                  Cube samples shall be taken in accordance with IS: 456-2000.
+                  Test reports of such cubes shall be submitted to consultants
+                  on a regular basis.
+                </td>
+              </tr>
+              <tr>
+                <td class="checkbox-cell"><input type="checkbox" /></td>
+                <td>
+                  No camber shall be provided in beams & slabs unless noted
+                  otherwise & specifically approved by the consultant in
+                  writing.
+                </td>
+              </tr>
+              <tr>
+                <td class="checkbox-cell"><input type="checkbox" /></td>
+                <td>
+                  Proper shoring & strutting to all sides of excavation is done.
+                </td>
+              </tr>
+              <tr>
+                <td class="checkbox-cell"><input type="checkbox" /></td>
+                <td>
+                  Necessary holes are provided in the basement raft with prior
+                  permission of the consultants.
+                </td>
+              </tr>
+              <tr>
+                <td class="checkbox-cell"><input type="checkbox" /></td>
+                <td>
+                  The lot of reinforcement in use is tested in the laboratory,
+                  and the reports are submitted to the consultant.
+                </td>
+              </tr>
+              <tr>
+                <td class="checkbox-cell"><input type="checkbox" /></td>
+                <td>
+                  Striking of formwork shall only be started after 70% of the
+                  characteristic strength of concrete is established.
+                </td>
+              </tr>
+              <tr>
+                <td class="checkbox-cell"><input type="checkbox" /></td>
+                <td>
+                  For all slabs thicker than 150 mm, the immediate lower slab
+                  shall also be under propped condition.
+                </td>
+              </tr>
+              <tr>
+                <td class="checkbox-cell"><input type="checkbox" /></td>
+                <td>
+                  The dimension and reinforcement of PT beams & slabs are
+                  checked & certified by PT Agency.
+                </td>
+              </tr>
+              <tr>
+                <td class="checkbox-cell"><input type="checkbox" /></td>
+                <td>
+                  Centering, shuttering & formwork of PT beams & PT slabs shall
+                  not be removed until stressing and grouting is completed by PT
+                  agency.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Permission Section -->
+      <div class="permission-section">
+        <h2>Permission Granted:</h2>
+        <p>
+          May be concreted after attending the above points and with due
+          intimation to the architect.
+        </p>
+        <p>
+          Will not be concreted till the above points are attended and
+          re-inspected by us.
+        </p>
+        <table class="signature-table">
+          <thead>
+            <tr>
+              <th>Agency</th>
+              <th>for Jayesh Makwana</th>
+              <th>Client's Representative</th>
+              <th>Contractor's Representative</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Signature & Time</td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>Name</td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Footer -->
+      <div class="footer">
+        <p>
+          Shop No : 11, Sant Vanden apartment, Swaminarayan nagar, Aurangabad
+          naka, Panchvati, Nashik-422003
+        </p>
+        <p>Mb: 8087561687 E-Mail: jayeshstrd@gmail.com</p>
+      </div>
+    </div>
+  </body>
+</html>

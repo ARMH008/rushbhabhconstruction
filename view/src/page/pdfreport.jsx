@@ -121,7 +121,7 @@ function PdfReport() {
 
       /* Site Visit Report Section */
       .site-visit-section {
-        margin-bottom: 30px;
+        margin-bottom: 0px;
       }
 
       .site-visit-section h2 {
@@ -165,7 +165,7 @@ function PdfReport() {
 
       /* Checklist Section */
       .checklist-section {
-        margin: 30px 0;
+        margin: 0 0;
       }
 
       .checklist-container {
@@ -281,6 +281,11 @@ function PdfReport() {
         <div className="page-container">
           <div className="header">
             <div className="header-text">
+              <img
+                src="https://res.cloudinary.com/dkppo2ktq/image/upload/v1732040103/epy7aps0wg1rs7faaspt.jpg"
+                alt="Logo"
+                className="logo"
+              ></img>
               <h1>Jayesh Makwana</h1>
               <p>
                 (I.M.E.Structure, A.M.I.E.)

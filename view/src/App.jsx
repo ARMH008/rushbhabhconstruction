@@ -13,6 +13,7 @@ import Dashboard from "./page/Dashboard";
 import Chart from "./page/chat";
 import Allchart from "./page/overallchart";
 import Newrepo from "./page/pdfreport";
+import SingleReport from "./page/singlereport";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
         <Route path="/chart" element={<Chart />} />
         <Route path="/detailchart" element={<Allchart />} />
         <Route path="/pdf" element={<Newrepo />} />
+        <Route path="/singlereport" element={<SingleReport />} />
       </Routes>
     </BrowserRouter>
   );

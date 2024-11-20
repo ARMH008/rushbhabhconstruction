@@ -37,6 +37,7 @@ const siteInspectionSchema = new mongoose.Schema(
       defectiveMaterialsReplaced: { type: Boolean, default: false },
       formworkCleaned: { type: Boolean, default: false },
       formworkWatertight: { type: Boolean, default: false },
+      formworkslabchhajja: { type: Boolean, default: false },
       columnBeamSecured: { type: Boolean, default: false },
       coverProvided: {
         columnReinforcement: { type: Boolean, default: false },
@@ -62,6 +63,10 @@ const siteInspectionSchema = new mongoose.Schema(
       reinforcementTested: { type: Boolean, default: false },
       formworkStriking: { type: Boolean, default: false },
       slabUnderPropped: { type: Boolean, default: false },
+      ptBeamsFormwork: { type: Boolean, default: false },
+      ptBeamsDimensions: { type: Boolean, default: false },
+      slabThicknessUnderpropped: { type: Boolean, default: false },
+      // futureBeamsSlabs: { type: Boolean, default: false },
     },
     additionalRemarks: {
       type: String,

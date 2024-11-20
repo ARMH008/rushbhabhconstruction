@@ -78,6 +78,14 @@ const Navbar = () => {
           <li>
             <Link
               className="text-sm text-gray-400 hover:text-blue-600 hover:font-bold"
+              to="/singlereport"
+            >
+              single
+            </Link>
+          </li>
+          <li>
+            <Link
+              className="text-sm text-gray-400 hover:text-blue-600 hover:font-bold"
               to="/detailchart"
             >
               overallchart

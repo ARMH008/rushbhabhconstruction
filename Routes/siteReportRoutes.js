@@ -5,7 +5,11 @@ const router = express.Router();
 
 router
   .route("/")
-  .post(siteController.createSiteReport)
+  .post(
+    siteController.uploadSiteImages,
+    siteController.processSiteImages,
+    siteController.createSiteReport
+  )
   .get(siteController.getsitereports);
 
 router.get("/report", siteController.generatePDF);

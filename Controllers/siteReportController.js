@@ -3,12 +3,123 @@ const multer = require("multer");
 const sharp = require("sharp");
 const cloudinary = require("cloudinary").v2;
 const puppeteer = require("puppeteer"); // Import Puppeteer
-const Site = require("./../Models/siteReportModel");
+const Site = require("./../models/siteReportModel");
 const AppError = require("../utils/appErrors");
 const catchAsync = require("../utils/catchAsync");
 const path = require("path");
 const fs = require("fs");
 const os = require("os");
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+// Memory storage for multer
+const multerStorage = multer.memoryStorage();
+
+// Multer upload configuration
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith("image")) {
+    cb(null, true);
+  } else {
+    cb(new AppError("Not an image! Please upload only images.", 400), false);
+  }
+};
+
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+});
+
+// Middleware for multiple image uploads
+exports.uploadSiteImages = upload.fields([
+  { name: "sitePhotos", maxCount: 5 },
+  { name: "modificationPhoto", maxCount: 5 },
+]);
+
+// Process and upload images to Cloudinary
+// exports.processSiteImages = catchAsync(async (req, res, next) => {
+//   if (!req.files) return next();
+
+//   const uploadToCloudinary = (buffer, folder) =>
+//     new Promise((resolve, reject) => {
+//       const uploadStream = cloudinary.uploader.upload_stream(
+//         { folder },
+//         (error, result) => {
+//           if (error) return reject(new AppError("Image upload failed", 500));
+//           resolve(result.secure_url);
+//         }
+//       );
+//       uploadStream.end(buffer);
+//     });
+
+//   // Process site photos
+//   if (req.files.sitePhotos) {
+//     req.body.sitePhotos = await Promise.all(
+//       req.files.sitePhotos.map(async (file) => {
+//         return await uploadToCloudinary(file.buffer, "site-inspections");
+//       })
+//     );
+//   }
+
+//   // Process modification photos
+//   if (req.files.modificationPhoto) {
+//     req.body.modificationPhoto = await Promise.all(
+//       req.files.modificationPhoto.map(async (file) => {
+//         return await uploadToCloudinary(file.buffer, "site-modifications");
+//       })
+//     );
+//   }
+
+//   next();
+// });
+exports.processSiteImages = catchAsync(async (req, res, next) => {
+  if (!req.files) return next();
+
+  const uploadToCloudinary = (buffer, folder) =>
+    new Promise((resolve, reject) => {
+      const uploadStream = cloudinary.uploader.upload_stream(
+        { folder },
+        (error, result) => {
+          if (error) return reject(new AppError("Image upload failed", 500));
+          resolve(result.secure_url);
+        }
+      );
+      uploadStream.end(buffer);
+    });
+
+  // Use sharp to process and compress images
+  const processImage = async (fileBuffer) => {
+    return await sharp(fileBuffer)
+      .resize(800) // Resize width to 800px, auto-adjust height
+      .jpeg({ quality: 80 }) // Convert to JPEG with 80% quality
+      .toBuffer();
+  };
+
+  // Process site photos
+  if (req.files.sitePhotos) {
+    req.body.sitePhotos = await Promise.all(
+      req.files.sitePhotos.map(async (file) => {
+        const compressedBuffer = await processImage(file.buffer);
+        return await uploadToCloudinary(compressedBuffer, "site-inspections");
+      })
+    );
+  }
+
+  // Process modification photos
+  if (req.files.modificationPhoto) {
+    req.body.modificationPhoto = await Promise.all(
+      req.files.modificationPhoto.map(async (file) => {
+        const compressedBuffer = await processImage(file.buffer);
+        return await uploadToCloudinary(compressedBuffer, "site-modifications");
+      })
+    );
+  }
+
+  next();
+});
+
 // const multer = require("multer");
 exports.getsitesinglereport = catchAsync(async (req, res, next) => {
   const doc = await Site.findById(req.params.id);
@@ -331,8 +442,6 @@ exports.getInspectionTrends = catchAsync(async (req, res, next) => {
 //     return next(new AppError(`PDF Generation Failed: ${error.message}`, 500));
 //   }
 // });
-const storage = multer.memoryStorage(); // Set multer to use memory storage.
-const upload = multer({ storage: storage });
 
 exports.generatePDF = catchAsync(async (req, res, next) => {
   let browser = null;
@@ -361,14 +470,28 @@ exports.generatePDF = catchAsync(async (req, res, next) => {
       await page.goto(url, { waitUntil: "networkidle0" });
 
       // Remove navbar and button before generating PDF
+      // Remove navbar and button before generating PDF and adjust layout
       await page.evaluate(() => {
+        // Remove the navbar
         const nav = document.querySelector("nav");
-        if (nav) nav.remove(); // Remove the navbar from the page before rendering the PDF
+        if (nav) {
+          nav.remove(); // Remove the <nav> element
+        }
 
+        // Adjust the top margin/padding of the main content container
+        const reportContent = document.querySelector("#report-content");
+        if (reportContent) {
+          reportContent.style.marginTop = "0"; // Reset top margin
+          reportContent.style.paddingTop = "0"; // Reset top padding
+        }
+
+        // Remove any specific button if necessary
         const button = document.querySelector(
           "button[onClick='downloadPDF()']"
         );
-        if (button) button.remove(); // Remove the download button
+        if (button) {
+          button.remove();
+        }
       });
     } catch (navigationError) {
       console.error("Navigation Error:", navigationError);

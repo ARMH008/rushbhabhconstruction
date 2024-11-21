@@ -86,6 +86,12 @@ const siteInspectionSchema = new mongoose.Schema(
     contractorRepresentativeName: {
       type: String,
     },
+    clientsign: {
+      type: String,
+    },
+    employeesign: {
+      type: String,
+    },
     createdAt: {
       type: Date,
       default: Date.now(),

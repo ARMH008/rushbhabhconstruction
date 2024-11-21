@@ -1,165 +1,310 @@
 /* eslint-disable no-unused-vars */
-import React, { useEffect, useState } from "react";
-import { Bar } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  BarElement,
-  Tooltip,
-  Title,
-  CategoryScale,
-  LinearScale,
-} from "chart.js";
+import React, { useState } from "react";
+import axios from "axios";
 
-// Register required components in Chart.js
-ChartJS.register(BarElement, Tooltip, Title, CategoryScale, LinearScale);
+const SiteInspectionForm = () => {
+  const [formData, setFormData] = useState({
+    jmStaffEngineer: "",
+    date: "",
+    time: "",
+    clientName: "",
+    architectName: "",
+    siteVisitCheckingDetails: "",
+    additionalRemarks: "",
+    specificNonCompliances: "",
+    clientRepresentativeName: "",
+    contractorRepresentativeName: "",
+  });
 
-const Chart = () => {
-  const [chartData, setChartData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [checklist, setChecklist] = useState({
+    propsTightAndStraight: false,
+    defectiveMaterialsReplaced: false,
+    formworkCleaned: false,
+    formworkWatertight: false,
+    formworkslabchhajja: false,
+    columnBeamSecured: false,
+    coverProvided: {
+      columnReinforcement: false,
+      beamBottoms: false,
+      beamSlides: false,
+      slabBottom: false,
+      chajjaSlabSlides: false,
+    },
+    chairsProvided: false,
+    spacerBarsProvided: false,
+    columnRingsProvided: false,
+    dowelBarsProvided: {
+      elevationPurdies: false,
+      hangerColumn: false,
+      futureBeamSlabStaircaseFlights: false,
+    },
+    cubeSamplesTaken: false,
+    noChamberInBeamSlab: false,
+    shoringShuttingDone: false,
+    basementHolesPermission: false,
+    reinforcementTested: false,
+    formworkStriking: false,
+    slabUnderPropped: false,
+    ptBeamsFormwork: false,
+    ptBeamsDimensions: false,
+    slabThicknessUnderpropped: false,
+  });
 
-  useEffect(() => {
-    // Fetch data from API
-    const fetchData = async () => {
-      try {
-        const response = await fetch(
-          "http://127.0.0.1:3000/api/v1/sitereport/employeeperformance"
-        );
-        const result = await response.json();
+  const [files, setFiles] = useState({
+    sitePhotos: [],
+    modificationPhoto: [],
+    clientsign: null,
+    employeesign: null,
+  });
 
-        if (result.status === "success" && Array.isArray(result.data)) {
-          // Process data for Chart.js
-          const labels = result.data.map((item) => item.name); // Employee names
-          const data = result.data.map((item) => item.inspectionCount); // Inspection counts
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
 
-          // Generate unique colors for each bar
-          const backgroundColors = labels.map(
-            (_, index) => `hsl(${(index * 360) / labels.length}, 70%, 50%)`
-          );
+  const handleChecklistChange = (e) => {
+    const { name, checked } = e.target;
+    const keys = name.split(".");
+    if (keys.length > 1) {
+      setChecklist((prevChecklist) => ({
+        ...prevChecklist,
+        [keys[0]]: {
+          ...prevChecklist[keys[0]],
+          [keys[1]]: checked,
+        },
+      }));
+    } else {
+      setChecklist({ ...checklist, [name]: checked });
+    }
+  };
 
-          setChartData({
-            labels,
-            datasets: [
-              {
-                label: "Inspections Done by Employees",
-                data,
-                backgroundColor: backgroundColors,
-              },
-            ],
-          });
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      } finally {
-        setLoading(false);
+  const handleFileChange = (e) => {
+    const { name, files: uploadedFiles } = e.target;
+    setFiles((prevFiles) => ({
+      ...prevFiles,
+      [name]:
+        name === "clientsign" || name === "employeesign"
+          ? uploadedFiles[0]
+          : [...uploadedFiles],
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const data = new FormData();
+
+    // Append form data
+    Object.keys(formData).forEach((key) => data.append(key, formData[key]));
+
+    // Append checklist data
+    data.append("checklist", JSON.stringify(checklist));
+
+    // Append files
+    Object.keys(files).forEach((key) => {
+      if (Array.isArray(files[key])) {
+        files[key].forEach((file) => data.append(key, file));
+      } else if (files[key]) {
+        data.append(key, files[key]);
       }
-    };
+    });
 
-    fetchData();
-  }, []);
+    try {
+      const response = await axios.post(
+        "http://127.0.0.1:3000/api/v1/sitereport",
+        data,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
-  if (loading) {
-    return <p>Loading...</p>;
-  }
-
-  if (!chartData) {
-    return <p>No data available</p>;
-  }
+      alert("Site report submitted successfully!");
+    } catch (error) {
+      console.error(error);
+      alert("An error occurred while submitting the site report.");
+    }
+  };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "20px",
-        width: "100%",
-      }}
-    >
-      <h2
-        style={{
-          marginBottom: "20px",
-          color: "#333",
-          textAlign: "center",
-          fontSize: "1.5rem",
-        }}
-      >
-        Employee Performance Report
-      </h2>
-      <div
-        style={{
-          width: "90%",
-          maxWidth: "800px",
-        }}
-      >
-        <Bar
-          data={chartData}
-          options={{
-            responsive: true,
-            maintainAspectRatio: false, // Allows scaling for smaller screens
-            plugins: {
-              title: {
-                display: true,
-                text: "Inspection Done by Each Employee",
-                font: {
-                  size: 16,
-                  weight: "bold",
-                },
-                color: "#444",
-              },
-              tooltip: {
-                callbacks: {
-                  label: function (context) {
-                    const name = chartData.labels[context.dataIndex];
-                    const count = context.raw;
-                    return `Name: ${name}, Inspections: ${count}`;
-                  },
-                },
-              },
-            },
-            scales: {
-              x: {
-                title: {
-                  display: true,
-                  text: "Employees",
-                  color: "#666",
-                  font: {
-                    size: 14,
-                    weight: "bold",
-                  },
-                },
-                ticks: {
-                  font: {
-                    size: window.innerWidth < 600 ? 10 : 12, // Adjust font size for mobile
-                  },
-                },
-              },
-              y: {
-                title: {
-                  display: true,
-                  text: "Inspection Count",
-                  color: "#666",
-                  font: {
-                    size: 14,
-                    weight: "bold",
-                  },
-                },
-                ticks: {
-                  font: {
-                    size: window.innerWidth < 600 ? 10 : 12, // Adjust font size for mobile
-                  },
-                },
-                beginAtZero: true,
-              },
-            },
-          }}
-          style={{
-            height: window.innerWidth < 600 ? "300px" : "400px", // Chart height adjusts based on screen size
-          }}
+    <form onSubmit={handleSubmit} encType="multipart/form-data">
+      <h2>Site Inspection Report</h2>
+
+      {/* JM Staff Engineer */}
+      <div>
+        <label>JM Staff Engineer ID:</label>
+        <input
+          type="text"
+          name="jmStaffEngineer"
+          value={formData.jmStaffEngineer}
+          onChange={handleInputChange}
+          required
         />
       </div>
-    </div>
+
+      {/* Date */}
+      <div>
+        <label>Date:</label>
+        <input
+          type="date"
+          name="date"
+          value={formData.date}
+          onChange={handleInputChange}
+        />
+      </div>
+
+      {/* Time */}
+      <div>
+        <label>Time:</label>
+        <input
+          type="time"
+          name="time"
+          value={formData.time}
+          onChange={handleInputChange}
+          required
+        />
+      </div>
+
+      {/* Client Name */}
+      <div>
+        <label>Client Name:</label>
+        <input
+          type="text"
+          name="clientName"
+          value={formData.clientName}
+          onChange={handleInputChange}
+          required
+        />
+      </div>
+
+      {/* Architect Name */}
+      <div>
+        <label>Architect Name:</label>
+        <input
+          type="text"
+          name="architectName"
+          value={formData.architectName}
+          onChange={handleInputChange}
+          required
+        />
+      </div>
+
+      {/* Site Visit Checking Details */}
+      <div>
+        <label>Site Visit Checking Details:</label>
+        <textarea
+          name="siteVisitCheckingDetails"
+          value={formData.siteVisitCheckingDetails}
+          onChange={handleInputChange}
+          required
+        ></textarea>
+      </div>
+
+      {/* Checklist */}
+      <fieldset>
+        <legend>Checklist</legend>
+        {Object.entries(checklist).map(([key, value]) =>
+          typeof value === "object" ? (
+            <fieldset key={key}>
+              <legend>{key}</legend>
+              {Object.entries(value).map(([subKey, subValue]) => (
+                <div key={subKey}>
+                  <label>
+                    <input
+                      type="checkbox"
+                      name={`${key}.${subKey}`}
+                      checked={subValue}
+                      onChange={handleChecklistChange}
+                    />
+                    {subKey}
+                  </label>
+                </div>
+              ))}
+            </fieldset>
+          ) : (
+            <div key={key}>
+              <label>
+                <input
+                  type="checkbox"
+                  name={key}
+                  checked={value}
+                  onChange={handleChecklistChange}
+                />
+                {key}
+              </label>
+            </div>
+          )
+        )}
+      </fieldset>
+
+      {/* Additional Remarks */}
+      <div>
+        <label>Additional Remarks:</label>
+        <textarea
+          name="additionalRemarks"
+          value={formData.additionalRemarks}
+          onChange={handleInputChange}
+        ></textarea>
+      </div>
+
+      {/* Specific Non-Compliances */}
+      <div>
+        <label>Specific Non-Compliances:</label>
+        <textarea
+          name="specificNonCompliances"
+          value={formData.specificNonCompliances}
+          onChange={handleInputChange}
+          required
+        ></textarea>
+      </div>
+
+      {/* File Uploads */}
+      <div>
+        <label>Site Photos:</label>
+        <input
+          type="file"
+          name="sitePhotos"
+          multiple
+          accept="image/*"
+          onChange={handleFileChange}
+        />
+      </div>
+
+      <div>
+        <label>Modification Photos:</label>
+        <input
+          type="file"
+          name="modificationPhoto"
+          multiple
+          accept="image/*"
+          onChange={handleFileChange}
+        />
+      </div>
+
+      <div>
+        <label>Client Signature:</label>
+        <input
+          type="file"
+          name="clientsign"
+          accept="image/*"
+          onChange={handleFileChange}
+        />
+      </div>
+
+      <div>
+        <label>Employee Signature:</label>
+        <input
+          type="file"
+          name="employeesign"
+          accept="image/*"
+          onChange={handleFileChange}
+        />
+      </div>
+
+      <button type="submit">Submit Report</button>
+    </form>
   );
 };
 
-export default Chart;
+export default SiteInspectionForm;

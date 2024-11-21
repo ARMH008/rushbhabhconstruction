@@ -12,7 +12,7 @@ const SiteReport = () => {
     const fetchReportData = async () => {
       try {
         const response = await axios.get(
-          "http://127.0.0.1:3000/api/v1/sitereport/673dd0454b905bf6321e4e81"
+          "http://127.0.0.1:3000/api/v1/sitereport/673e3240d50af2116aaf8b26"
         );
         setReportData(response.data.data.data);
         setIsLoading(false);

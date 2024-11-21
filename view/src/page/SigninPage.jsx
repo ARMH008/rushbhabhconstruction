@@ -28,7 +28,7 @@ const SigninPage = () => {
         };
 
         const { data } = await axios.post(
-          "api/v1/users/login",
+          "api/v1/user/login",
           { email, password },
           config
         );

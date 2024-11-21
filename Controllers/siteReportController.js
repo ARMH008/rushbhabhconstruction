@@ -20,6 +20,7 @@ const multerStorage = multer.memoryStorage();
 
 // Multer upload configuration
 const multerFilter = (req, file, cb) => {
+  // Allow only image files (e.g., jpg, jpeg, png, gif, etc.)
   if (file.mimetype.startsWith("image")) {
     cb(null, true);
   } else {
@@ -36,47 +37,14 @@ const upload = multer({
 exports.uploadSiteImages = upload.fields([
   { name: "sitePhotos", maxCount: 5 },
   { name: "modificationPhoto", maxCount: 5 },
+  { name: "clientsign", maxCount: 1 },
+  { name: "employeesign", maxCount: 1 },
 ]);
 
-// Process and upload images to Cloudinary
-// exports.processSiteImages = catchAsync(async (req, res, next) => {
-//   if (!req.files) return next();
-
-//   const uploadToCloudinary = (buffer, folder) =>
-//     new Promise((resolve, reject) => {
-//       const uploadStream = cloudinary.uploader.upload_stream(
-//         { folder },
-//         (error, result) => {
-//           if (error) return reject(new AppError("Image upload failed", 500));
-//           resolve(result.secure_url);
-//         }
-//       );
-//       uploadStream.end(buffer);
-//     });
-
-//   // Process site photos
-//   if (req.files.sitePhotos) {
-//     req.body.sitePhotos = await Promise.all(
-//       req.files.sitePhotos.map(async (file) => {
-//         return await uploadToCloudinary(file.buffer, "site-inspections");
-//       })
-//     );
-//   }
-
-//   // Process modification photos
-//   if (req.files.modificationPhoto) {
-//     req.body.modificationPhoto = await Promise.all(
-//       req.files.modificationPhoto.map(async (file) => {
-//         return await uploadToCloudinary(file.buffer, "site-modifications");
-//       })
-//     );
-//   }
-
-//   next();
-// });
 exports.processSiteImages = catchAsync(async (req, res, next) => {
   if (!req.files) return next();
 
+  // Function to upload images to Cloudinary
   const uploadToCloudinary = (buffer, folder) =>
     new Promise((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
@@ -90,30 +58,67 @@ exports.processSiteImages = catchAsync(async (req, res, next) => {
     });
 
   // Use sharp to process and compress images
-  const processImage = async (fileBuffer) => {
-    return await sharp(fileBuffer)
-      .resize(800) // Resize width to 800px, auto-adjust height
-      .jpeg({ quality: 80 }) // Convert to JPEG with 80% quality
-      .toBuffer();
+  const processImage = async (fileBuffer, mimetype) => {
+    let processedBuffer = fileBuffer;
+
+    // If the image is not JPEG, convert it to JPEG with compression
+    if (mimetype !== "image/jpeg") {
+      processedBuffer = await sharp(fileBuffer)
+        .resize(800) // Resize width to 800px, auto-adjust height
+        .jpeg({ quality: 80 }) // Convert to JPEG with 80% quality
+        .toBuffer();
+    }
+
+    return processedBuffer;
+  };
+
+  // Helper to process files in a specific field
+  const processFiles = async (files, folder) => {
+    return await Promise.all(
+      files.map(async (file) => {
+        const compressedBuffer = await processImage(file.buffer, file.mimetype);
+        return await uploadToCloudinary(compressedBuffer, folder);
+      })
+    );
   };
 
   // Process site photos
   if (req.files.sitePhotos) {
-    req.body.sitePhotos = await Promise.all(
-      req.files.sitePhotos.map(async (file) => {
-        const compressedBuffer = await processImage(file.buffer);
-        return await uploadToCloudinary(compressedBuffer, "site-inspections");
-      })
+    req.body.sitePhotos = await processFiles(
+      req.files.sitePhotos,
+      "site-inspections"
     );
   }
 
   // Process modification photos
   if (req.files.modificationPhoto) {
-    req.body.modificationPhoto = await Promise.all(
-      req.files.modificationPhoto.map(async (file) => {
-        const compressedBuffer = await processImage(file.buffer);
-        return await uploadToCloudinary(compressedBuffer, "site-modifications");
-      })
+    req.body.modificationPhoto = await processFiles(
+      req.files.modificationPhoto,
+      "site-modifications"
+    );
+  }
+
+  // Process client signature
+  if (req.files.clientsign) {
+    const compressedBuffer = await processImage(
+      req.files.clientsign[0].buffer,
+      req.files.clientsign[0].mimetype
+    );
+    req.body.clientsign = await uploadToCloudinary(
+      compressedBuffer,
+      "client-signatures"
+    );
+  }
+
+  // Process employee signature
+  if (req.files.employeesign) {
+    const compressedBuffer = await processImage(
+      req.files.employeesign[0].buffer,
+      req.files.employeesign[0].mimetype
+    );
+    req.body.employeesign = await uploadToCloudinary(
+      compressedBuffer,
+      "employee-signatures"
     );
   }
 
